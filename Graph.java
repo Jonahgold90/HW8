@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Jonah Goldberg / Section 002
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -103,8 +103,39 @@ public class Graph {
    */
   
   public int findRoot() {
+    //define a number of edges integer array that is the size of the number of nodes
+    int[] numNodeEdges = new int[numVertices];
 
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+    //loop through num of nodes
+    for(int i = 0; i < numVertices; i++) {
+      //loop through each destination in the adjacency matrix
+      for(int dest : adjListArr[i]) {
+        //increase the count at the destination (another edge found)
+        numNodeEdges[dest]++;
+      }
+    }
+
+    //default root index of -1
+    int rootIndex = -1; 
+
+    //loop through num of nodes
+    for(int i = 0; i < numVertices; i++) {
+      if(numNodeEdges[i] == 0) {
+        if(rootIndex == -1) {
+          //set root index = i
+          rootIndex = i;
+        } else {
+          //multiple root nodes found
+          return -1;
+        }
+      } 
+    }
+    //return -1 if nothing found
+    if(rootIndex == -1) {
+      return  -1;
+    } else {
+      //return the valoe of the root index
+      return vertexValues.get(rootIndex);
+    }
   } 
 }

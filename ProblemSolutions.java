@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Jonah Goldberg / Section 002
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -72,8 +72,7 @@ class ProblemSolutions {
      * @return boolean          - True if all exams can be taken, else false.
      */
 
-    public boolean canFinish(int numExams, 
-                             int[][] prerequisites) {
+    public boolean canFinish(int numExams, int[][] prerequisites) {
       
         int numNodes = numExams;  // # of nodes in graph
 
@@ -81,11 +80,64 @@ class ProblemSolutions {
         ArrayList<Integer>[] adj = getAdjList(numExams, 
                                         prerequisites); 
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        //initialize a boolean array to track the visited nodes
+        boolean[] visited = new boolean[numExams];
+
+        //initialize a boolean array to track if the current node is on the current DFS path
+        boolean[] onPath = new boolean[numExams];
+
+        //loop through every exam node
+        for(int i = 0; i < numExams; i++) {
+            //check if the current node is not visited 
+            if(!visited[i]) {
+                //call the dfs method
+                if(!dfs(i, adj, visited, onPath)) {
+                    //return false if we've found a cycle
+                    return false;
+                }
+            }
+        }
+
+        //all nodes visited and no cycles found
+        return true;
 
     }
 
+
+    private boolean dfs(int node, ArrayList<Integer>[] adj, boolean[] visited, boolean[] onPath) {
+        // base case logic here (cycle detection or skip if visited)
+        if(onPath[node]) {
+            //if this node was already visited in the recursive stack then we've found a cycle
+            return false;
+        } 
+
+        //if we've already fully visited a node and no cycle is found then return true (effectively skipping it)
+        if(visited[node]) {
+            return true;
+        }
+
+        // mark node as visited/onPath
+        onPath[node] = true;
+    
+        //loop through the nodes neighbors
+        for(int neighbor : adj[node]) 
+            //recursive dfs call passing the neighbor as the new node
+            if(!dfs(neighbor, adj, visited, onPath)) {
+                //if it returns false it means a cycle was found so we return false
+                return false;
+            }
+        
+
+        //we've now explored every node so we will now look at a different path
+        onPath[node] = false;
+
+        //mark that the node is fully checked and not part of a cycle
+        visited[node] = true;
+
+        //unmark node from onPath, mark as fully visited
+        return true; 
+    }
+    
 
     /**
      * Method getAdjList
@@ -166,7 +218,7 @@ class ProblemSolutions {
     public int numGroups(int[][] adjMatrix) {
         int numNodes = adjMatrix.length;
         Map<Integer,List<Integer>> graph = new HashMap();
-        int i = 0, j =0;
+        int i = 0, j = 0;
 
         /*
          * Converting the Graph Adjacency Matrix to
@@ -192,7 +244,47 @@ class ProblemSolutions {
 
         // YOUR CODE GOES HERE - you can add helper methods, you do not need
         // to put all code in this method.
-        return -1;
+
+        //initialize a visited boolean array for each node
+        boolean[] visited = new boolean[numNodes];
+
+        //initialize a counter variable for the number of groups we find
+        int numGroups = 0;
+
+        //loop through every node
+        for(int k = 0; k < numNodes; k++) {
+            //if the current node hasn't been visited yet then call dfs
+            if(!visited[k]) {
+                //increment the number of groups because an unvisited node means a new group is starting
+                numGroups++;
+                //call the dfs method
+                groupDFS(k, graph, visited);
+            }
+        }
+
+        return numGroups;
+    }
+
+    
+    void groupDFS(int node, Map<Integer, List<Integer>> graph, boolean[] visited) {
+
+        //set the current node to visited
+        visited[node] = true;
+
+        //check if the node isn't in the adjacency list it doesn't have neighbors
+        if(!graph.containsKey(node)) {
+            //just return
+            return;
+        }
+
+        //check all of the nodes neighbors
+        for(int neighbor : graph.get(node)) {
+            //if the neighbor isn't visited yet
+            if(!visited[neighbor]) {
+                //run the dfs with the neighbor as the new node
+                groupDFS(neighbor, graph, visited);
+            }
+        }
     }
 
 }
